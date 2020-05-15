@@ -9,52 +9,75 @@
 #include <vector>
 #include <functional>
 
-class EightPuzzleGame final : public IGame {
-private:
-    const std::vector<int> kInitBoard;
-    const std::vector<int> kFinalBoard;
-    std::vector<int> board;
-    std::vector<std::function<void()>> acts;
+namespace Environment {
+    // 八数字谜题的实现类
+    class EightPuzzleGame final : public IGame {
+    private:
+        // 每局游戏的初始棋盘
+        const std::vector<int> kInitBoard;
 
-public:
-    static constexpr int EMPTY = -1;
+        // 完成状态的棋盘
+        const std::vector<int> kFinalBoard;
 
-public:
-    explicit EightPuzzleGame(std::vector<int> board);
+        // 当前状态的棋盘
+        std::vector<int> board;
 
-    EightPuzzleGame(const EightPuzzleGame& rhs);
+        // 动作谓词
+        std::vector<std::function<void()>> acts;
 
-    ~EightPuzzleGame() = default;
+    public:
+        // 空白部分在棋盘中的值
+        static constexpr int EMPTY = -1;
 
-    void Reset() override;
+        // 八数字游戏能够取得的最好得分
+        static constexpr int BEST_SCORE = 9;
 
-    void Act(unsigned int action) override;
+    public:
+        explicit EightPuzzleGame(std::vector<int> board);
 
-    [[nodiscard]]
-    float Score() const override;
+        EightPuzzleGame(const EightPuzzleGame& rhs);
 
-    [[nodiscard]]
-    bool Done() const noexcept override;
+        ~EightPuzzleGame() = default;
 
-    [[nodiscard]]
-    std::shared_ptr<IGame> Clone() const override;
+        void Reset() override;
 
-    [[nodiscard]]
-    unsigned int ActionSpace() const override;
+        void Act(unsigned int action) override;
 
-    void Print() const override;
+        [[nodiscard]]
+        float Score() const override;
 
-private:
-    [[nodiscard]]
-    std::size_t EmptyIndex() const;
+        [[nodiscard]]
+        float BestScore() const override;
 
-    void MoveLeft();
+        [[nodiscard]]
+        bool Done() const noexcept override;
 
-    void MoveRight();
+        [[nodiscard]]
+        std::shared_ptr<IGame> Clone() const override;
 
-    void MoveUp();
+        [[nodiscard]]
+        unsigned int ActionSpace() const override;
 
-    void MoveDown();
+        void Print() const override;
 
-    void InitActs();
-};
+    private:
+        // 获得空白位置的索引
+        [[nodiscard]]
+        std::size_t EmptyIndex() const;
+
+        // 数字左移，空白右移
+        void MoveLeft();
+
+        // 数字右移，空白左移
+        void MoveRight();
+
+        // 数字上移，空白下移
+        void MoveUp();
+
+        // 数字下移，空白上移
+        void MoveDown();
+
+        // 初始化动作谓词
+        void InitActs();
+    };
+}

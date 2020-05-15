@@ -7,45 +7,47 @@
 #include "../Environment/GameEnvironment.h"
 #include "../Random.h"
 
-#include <numeric>
-#include <iostream>
+using namespace Agent;
 
-SimpleGeneticAgent::SimpleGeneticAgent(GameEnvironment& environment, int maxGeneration, int population,
-                                       float crossoverRate, float mutationRate, int chromosomeLength
-) noexcept : kMaxGeneration(maxGeneration), kPopulation(population), kCrossoverRate(crossoverRate),
-    kMutationRate(mutationRate), kChromosomeLength(chromosomeLength), environment(environment),
-    randomEngine(RandomEngine()), selectDist(0, 1), crossoverDist(0, 1), mutateDist(0, 1) {
-    InitColony();
+SimpleGeneticAgent::SimpleGeneticAgent(Environment::GameEnvironment& environment, int maxGeneration,
+                                       int population, float crossoverRate, float mutationRate, int chromosomeLength
+) noexcept :
+    kMaxGeneration(maxGeneration),
+    kPopulation(population),
+    kMutationRate(mutationRate),
+    kChromosomeLength(chromosomeLength),
+    environment(environment),
+    randomEngine(RandomEngine()),
+    mutateDist(0, 1),
+    crossoverStrategy(std::make_unique<OnePointCrossover>(crossoverRate, chromosomeLength, population)),
+    selectionStrategy(std::make_unique<RouletteWheelSelection>()) {
+    InitPopulation();
 }
 
 void SimpleGeneticAgent::Evolute() {
-    EvaluateColony();
     Select();
     Crossover();
     Mutate();
+    EvaluatePopulation();
     ++generation;
 }
 
 bool SimpleGeneticAgent::Done() const noexcept {
-    return generation >= kMaxGeneration;
+    const auto& best = GetBestIndividual();
+    const bool gotBestScore = best.Score == environment.BestScore();
+    return generation >= kMaxGeneration || gotBestScore;
 }
 
 void SimpleGeneticAgent::Select() {
-    float sum = std::accumulate(colony.cbegin(), colony.cend(), 0.f, [](float sum, const Entity& rhs) {
-        return sum + rhs.Score;
-    });
-    for (auto& e : colony) {
-        std::cout << e.Score << " ";
-    }
-    std::cout << sum << std::endl;
+    selectionStrategy->Select(population);
 }
 
 void SimpleGeneticAgent::Crossover() {
-
+    crossoverStrategy->Crossover(population);
 }
 
 void SimpleGeneticAgent::Mutate() {
-    for (auto& entity : colony) {
+    for (auto& entity : population) {
         for (auto& c : entity.Chromosome) {
             if (mutateDist(randomEngine) <= kMutationRate) {
                 c = !c;
@@ -54,31 +56,33 @@ void SimpleGeneticAgent::Mutate() {
     }
 }
 
-void SimpleGeneticAgent::InitColony() {
+void SimpleGeneticAgent::InitPopulation() {
     generation = 0;
     for (int i = 0; i < kPopulation; ++i) {
-        colony.emplace_back(kChromosomeLength);
+        auto individual = Individual(kChromosomeLength);
+        individual.Score = environment.Evaluate(individual.Chromosome);
+        population.push_back(std::move(individual));
     }
 }
 
-void SimpleGeneticAgent::EvaluateColony() {
-    for (auto& entity : colony) {
-        float score = environment.Evaluate(entity.Chromosome);
-        entity.Score = score;
+void SimpleGeneticAgent::EvaluatePopulation() {
+    for (auto& individual : population) {
+        float score = environment.Evaluate(individual.Chromosome);
+        individual.Score = score;
     }
 }
 
-const Entity& SimpleGeneticAgent::GetBestEntity() const {
+const Individual& SimpleGeneticAgent::GetBestIndividual() const {
     float bestScore = -1;
     std::size_t index = -1;
-    for (std::size_t i = 0; i < colony.size(); ++i) {
-        const auto& entity = colony[i];
-        if (entity.Score > bestScore) {
-            bestScore = entity.Score;
+    for (std::size_t i = 0; i < population.size(); ++i) {
+        const auto& individual = population[i];
+        if (individual.Score > bestScore) {
+            bestScore = individual.Score;
             index = i;
         }
     }
-    return colony.at(index);
+    return population.at(index);
 }
 
 void SimpleGeneticAgent::Accept(const IAgentVisitor& visitor) const {
@@ -89,6 +93,6 @@ unsigned int SimpleGeneticAgent::Generation() const noexcept {
     return generation;
 }
 
-const GameEnvironment& SimpleGeneticAgent::Environment() const {
+const Environment::GameEnvironment& SimpleGeneticAgent::Environment() const {
     return environment;
 }

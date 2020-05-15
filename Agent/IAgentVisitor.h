@@ -4,9 +4,12 @@
 
 #pragma once
 
-class IGeneticAgent;
+namespace Agent {
+    class IGeneticAgent;
 
-class IAgentVisitor {
-public:
-    virtual void Visit(const IGeneticAgent& agent) const = 0;
-};
+    // 访问遗传算法智能体的接口
+    class IAgentVisitor {
+    public:
+        virtual void Visit(const IGeneticAgent& agent) const = 0;
+    };
+}

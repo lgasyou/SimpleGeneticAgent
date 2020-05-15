@@ -6,7 +6,9 @@
 
 #include <random>
 
+// 随机数引擎单例
 inline std::default_random_engine& RandomEngine() {
-    static std::default_random_engine eng;
+    static std::random_device randomDevice;
+    static std::default_random_engine eng{randomDevice()};
     return eng;
 }

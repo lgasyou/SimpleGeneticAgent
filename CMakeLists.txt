@@ -7,17 +7,17 @@ add_executable(
         EightPuzzle
         Main.cpp
         Environment/GameEnvironment.h
-        Agent/SimpleGeneticBestEntityVisitor.h
+        Agent/SimpleGeneticBestIndividualVisitor.h
         Agent/SimpleGeneticAgent.h
         Environment/GameEnvironment.cpp
         Agent/SimpleGeneticAgent.cpp
-        Agent/SimpleGeneticBestEntityVisitor.cpp
-        Agent/IAgentVisitor.h Agent/Entity.h
-        Agent/Entity.cpp
+        Agent/SimpleGeneticBestIndividualVisitor.cpp
+        Agent/IAgentVisitor.h Agent/Individual.h
+        Agent/Individual.cpp
         Agent/IGeneticAgent.h
         Agent/SimpleGeneticEveryGenerationVisitor.cpp
         Agent/SimpleGeneticEveryGenerationVisitor.h
         Environment/EightPuzzleGame.cpp
         Environment/EightPuzzleGame.h
         Environment/IGame.h
-        Random.h)
+        Random.h Agent/SelectionStrategy.cpp Agent/SelectionStrategy.h Agent/CrossoverStrategy.cpp Agent/CrossoverStrategy.h)

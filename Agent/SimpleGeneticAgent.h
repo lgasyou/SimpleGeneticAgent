@@ -5,60 +5,73 @@
 #pragma once
 
 #include "IGeneticAgent.h"
-#include "Entity.h"
+#include "Individual.h"
+#include "SelectionStrategy.h"
+#include "CrossoverStrategy.h"
 
 #include <random>
+#include <memory>
 
-class IAgentVisitor;
-class GameEnvironment;
+namespace Environment {
+    class GameEnvironment;
+}
 
-class SimpleGeneticAgent final : public IGeneticAgent {
-private:
-    const int kMaxGeneration;
-    const int kPopulation;
-    const float kCrossoverRate;
-    const float kMutationRate;
-    const int kChromosomeLength;
+namespace Agent {
+    class IAgentVisitor;
 
-private:
-    GameEnvironment& environment;
-    std::vector<Entity> colony;
-    unsigned int generation = 0;
-    std::default_random_engine& randomEngine;
-    std::uniform_real_distribution<float> selectDist;
-    std::uniform_real_distribution<float> crossoverDist;
-    std::uniform_real_distribution<float> mutateDist;
+    // 遗传算法智能体的简单实现类
+    class SimpleGeneticAgent final : public IGeneticAgent {
+    private:
+        const int kMaxGeneration;
+        const int kPopulation;
+        const float kMutationRate;
+        const int kChromosomeLength;
 
-public:
-    explicit SimpleGeneticAgent(GameEnvironment& environment, int maxGeneration, int population,
-                                float crossoverRate, float mutationRate, int chromosomeLength) noexcept;
+    private:
+        Environment::GameEnvironment& environment;
+        std::vector<Individual> population;
+        unsigned int generation = 0;
+        std::default_random_engine& randomEngine;
+        std::uniform_real_distribution<float> mutateDist;
+        std::unique_ptr<ICrossoverStrategy> crossoverStrategy;
+        std::unique_ptr<ISelectionStrategy> selectionStrategy;
 
-    ~SimpleGeneticAgent() = default;
+    public:
+        explicit SimpleGeneticAgent(Environment::GameEnvironment& environment, int maxGeneration, int population,
+                                    float crossoverRate, float mutationRate, int chromosomeLength) noexcept;
 
-    void Evolute() override;
+        ~SimpleGeneticAgent() = default;
 
-    [[nodiscard]]
-    unsigned int Generation() const noexcept override;
+        void Evolute() override;
 
-    [[nodiscard]]
-    const Entity& GetBestEntity() const override;
+        [[nodiscard]]
+        unsigned int Generation() const noexcept override;
 
-    [[nodiscard]]
-    bool Done() const noexcept override;
+        [[nodiscard]]
+        const Individual& GetBestIndividual() const override;
 
-    void Accept(const IAgentVisitor& visitor) const override;
+        [[nodiscard]]
+        bool Done() const noexcept override;
 
-    [[nodiscard]]
-    const GameEnvironment& Environment() const override;
+        void Accept(const IAgentVisitor& visitor) const override;
 
-private:
-    void InitColony();
+        [[nodiscard]]
+        const Environment::GameEnvironment& Environment() const override;
 
-    void EvaluateColony();
+    private:
+        // 初始化群体，并获取每个个体的评分
+        void InitPopulation();
 
-    void Select();
+        // 对每个个体进行评价
+        void EvaluatePopulation();
 
-    void Crossover();
+        // 选择
+        void Select();
 
-    void Mutate();
-};
+        // 交叉
+        void Crossover();
+
+        // 变异
+        void Mutate();
+    };
+}

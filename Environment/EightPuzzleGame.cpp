@@ -8,6 +8,7 @@
 #include <functional>
 
 using std::cout, std::endl;
+using namespace Environment;
 
 EightPuzzleGame::EightPuzzleGame(
         std::vector<int> board
@@ -42,6 +43,10 @@ float EightPuzzleGame::Score() const {
         }
     }
     return score;
+}
+
+float EightPuzzleGame::BestScore() const {
+    return BEST_SCORE;
 }
 
 bool EightPuzzleGame::Done() const noexcept {

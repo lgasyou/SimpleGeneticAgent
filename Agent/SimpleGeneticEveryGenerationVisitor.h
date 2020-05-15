@@ -6,9 +6,12 @@
 
 #include "IAgentVisitor.h"
 
-class IGeneticAgent;
+namespace Agent {
+    class IGeneticAgent;
 
-class SimpleGeneticEveryGenerationVisitor final : public IAgentVisitor {
-public:
-    void Visit(const IGeneticAgent& agent) const override;
-};
+    // 用于在每代访问智能体，获取当前智能体的基本迭代信息
+    class SimpleGeneticEveryGenerationVisitor final : public IAgentVisitor {
+    public:
+        void Visit(const IGeneticAgent& agent) const override;
+    };
+}

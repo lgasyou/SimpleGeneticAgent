@@ -5,11 +5,13 @@
 #include "GameEnvironment.h"
 #include "IGame.h"
 
+using namespace Environment;
+
 GameEnvironment::GameEnvironment(IGame& game) : game(game) {
 
 }
 
-float GameEnvironment::Evaluate(const std::vector<unsigned int>& chromosome) {
+float GameEnvironment::Evaluate(const Agent::ChromosomeType& chromosome) {
     game.Reset();
     const auto& actions = DecodeChromosome(chromosome);
     for (const auto action : actions) {
@@ -21,7 +23,7 @@ float GameEnvironment::Evaluate(const std::vector<unsigned int>& chromosome) {
     return game.Score();
 }
 
-std::vector<unsigned int> GameEnvironment::DecodeChromosome(const std::vector<unsigned int>& chromosome) const {
+std::vector<unsigned int> GameEnvironment::DecodeChromosome(const Agent::ChromosomeType& chromosome) const {
     std::vector<unsigned int> ret;
     auto iter = chromosome.cbegin();
     while (iter != chromosome.cend() && iter + 1 != chromosome.cend()) {
@@ -37,4 +39,8 @@ std::vector<unsigned int> GameEnvironment::DecodeChromosome(const std::vector<un
 
 const IGame& GameEnvironment::Game() const {
     return game;
+}
+
+float GameEnvironment::BestScore() const {
+    return game.BestScore();
 }
