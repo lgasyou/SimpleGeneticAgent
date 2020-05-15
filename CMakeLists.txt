@@ -20,4 +20,8 @@ add_executable(
         Environment/EightPuzzleGame.cpp
         Environment/EightPuzzleGame.h
         Environment/IGame.h
-        Random.h Agent/SelectionStrategy.cpp Agent/SelectionStrategy.h Agent/CrossoverStrategy.cpp Agent/CrossoverStrategy.h)
+        Random.h
+        Agent/SelectionStrategy.cpp
+        Agent/SelectionStrategy.h
+        Agent/CrossoverStrategy.cpp
+        Agent/CrossoverStrategy.h)
