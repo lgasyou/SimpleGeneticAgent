@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <functional>
+#include <cassert>
 
 using std::cout, std::endl;
 using namespace Environment;
