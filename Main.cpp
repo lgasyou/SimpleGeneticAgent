@@ -5,6 +5,7 @@
 #include "Agent/SimpleGeneticEveryGenerationVisitor.h"
 
 #include <iostream>
+#include <cassert>
 
 using namespace Agent;
 using namespace Environment;
@@ -52,7 +53,7 @@ int main() {
     constexpr int chromosomeLength = 20;
 
     // 八数字的初始棋盘
-    const auto& board = {2, 8, 3, 1, EightPuzzleGame::EMPTY, 4, 7, 6, 5};
+    const std::initializer_list<int>& board = {2, 8, 3, 1, EightPuzzleGame::EMPTY, 4, 7, 6, 5};
 
     // 检查数据合理性
     static_assert(population > 0);
