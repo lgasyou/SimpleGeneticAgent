@@ -6,6 +6,7 @@
 #include "../Random.h"
 
 #include <numeric>
+#include <stdexcept>
 
 using namespace Agent;
 
